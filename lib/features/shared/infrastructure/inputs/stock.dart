@@ -16,7 +16,7 @@ class Stock extends FormzInput<int, StockError> {
 
     if (displayError == StockError.empty) return 'El campo es requerido';
     if (displayError == StockError.value) {
-      return 'El stock debe ser igual o mayor a 0';
+      return 'El stock debe ser un número entero mayor o igual a 0';
     }
     if (displayError == StockError.format) {
       return 'El stock debe ser un número entero';
