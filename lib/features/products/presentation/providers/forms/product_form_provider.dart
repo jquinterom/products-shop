@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:formz/formz.dart';
 import 'package:teslo_app/config/constants/environment.dart';
 import 'package:teslo_app/features/products/domain/domain.dart';
+import 'package:teslo_app/features/products/presentation/providers/products_provider.dart';
 import 'package:teslo_app/features/shared/infrastructure/inputs/inputs.dart';
 
 class ProductFormState {
@@ -61,7 +62,8 @@ class ProductFormState {
 }
 
 class ProductFormNotifier extends StateNotifier<ProductFormState> {
-  final void Function(Map<String, dynamic> productLike)? onSubmitCallback;
+  final Future<bool> Function(Map<String, dynamic> productLike)?
+  onSubmitCallback;
 
   ProductFormNotifier({this.onSubmitCallback, required Product product})
     : super(
@@ -83,12 +85,14 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
     _touchedEverything();
     if (!state.isFormValid) return false;
 
+    if (onSubmitCallback == null) return false;
+
     final productLike = {
       'id': state.id,
       'title': state.title.value,
       'slug': state.slug.value,
       'price': state.price.value,
-      'inStock': state.inStock.value,
+      'stock': state.inStock.value,
       'sizes': state.sizes,
       'gender': state.gender,
       'description': state.description,
@@ -101,8 +105,11 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
           .toList(),
     };
 
-    // onSubmitCallback?.call(productLike);
-    return true;
+    try {
+      return await onSubmitCallback!(productLike);
+    } catch (e) {
+      return false;
+    }
   }
 
   void _touchedEverything() {
@@ -164,7 +171,7 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
     );
   }
 
-  void onSizeChanged(List<String> value) {
+  void onSizesChanged(List<String> value) {
     state = state.copyWith(sizes: value);
   }
 
@@ -183,9 +190,12 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
 
 final productFormProvider = StateNotifierProvider.autoDispose
     .family<ProductFormNotifier, ProductFormState, Product>((ref, product) {
-      // TODO: createUpateCallback
+      final createUpdateCallback = ref
+          .read(productsProvider.notifier)
+          .createOrUpdateProduct;
+
       return ProductFormNotifier(
         product: product,
-        // TODO: onSubmitCallback : createUpdateCallback
+        onSubmitCallback: createUpdateCallback,
       );
     });
