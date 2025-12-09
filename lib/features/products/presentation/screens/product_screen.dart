@@ -11,6 +11,14 @@ class ProductScreen extends ConsumerWidget {
 
   const ProductScreen({super.key, required this.productId});
 
+  void showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productState = ref.watch(productProvider(productId));
@@ -30,12 +38,17 @@ class ProductScreen extends ConsumerWidget {
           : _ProductView(product: productState.product!),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.save_outlined),
-        onPressed: () {
+        onPressed: () async {
           if (productState.product == null) return;
 
-          ref
+          final value = await ref
               .read(productFormProvider(productState.product!).notifier)
               .onFormSubmit();
+
+          if (!value) return;
+          if (!context.mounted) return;
+
+          showSnackbar(context, 'Product updated successfully');
         },
       ),
     );
