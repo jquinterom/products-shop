@@ -4,6 +4,16 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+
+  <key>NSPhotoLibraryUsageDescription</key>
+	<string>Teslo App needs access to your photo library to upload product images</string>
+
+  <key>NSCameraUsageDescription</key>
+	<string>Teslo App needs access to your camera to upload product images</string>
+
+  <key>NSMicrophoneUsageDescription</key>
+	<string>Teslo App needs access to your microphone to upload product images</string>
+
 	<key>CFBundleDisplayName</key>
 	<string>Teslo App</string>
 	<key>CFBundleExecutable</key>

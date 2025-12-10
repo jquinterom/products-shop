@@ -186,6 +186,10 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
   void onTagsChanged(String value) {
     state = state.copyWith(tags: value);
   }
+
+  void updateProductImages(String path) {
+    state = state.copyWith(images: [...state.images, path]);
+  }
 }
 
 final productFormProvider = StateNotifierProvider.autoDispose
